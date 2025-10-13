@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* CSS for the Deep Blue Theme and component visibility */
+        body { background-color: #0d1a26; color: #ffffff; }
+        .container { margin-top: 50px; }
+        .card { 
+            background-color: #1a2a3a;
+            border: 1px solid #3d5a80; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            color: #ffffff;
+        }
+        .form-group label { color: #ffffff !important; font-weight: bold; }
+        input[type="number"] {
+            color: #ffffff;
+            background-color: #2c425a;
+            border: 1px solid #3d5a80;
+        }
+        .result-box { margin-top: 20px; padding: 20px; border-radius: 10px; }
+        .positive { background-color: #c0392b; color: #ffffff; border: 1px solid #a43023; }
+        .negative { background-color: #27ae60; color: #ffffff; border: 1px solid #209951; }
+        
+        /* Chatbot Styles for visibility */
+        .chatbot-container .card-header {
+            padding: 10px 15px;
+            border-radius: 10px 10px 0 0 !important;
+            background-color: #2980b9 !important;
+        }
+        #chat-body { background-color: #2c425a; border-top: 1px solid #3d5a80; }
+        .bot-message { text-align: left; background-color: #3d5a80; padding: 5px; border-radius: 5px; margin-bottom: 5px; color: white; }
+        .user-message { text-align: right; background-color: #5a7b9e; padding: 5px; border-radius: 5px; margin-bottom: 5px; color: white; }
+        #chat-input { color: #ffffff; background-color: #1e1e1e; border: 1px solid #555555; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Prediction System 🩺</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/">← Back to Dashboard</a></li>
+            </ul>
+            <a href="/logout" class="btn btn-outline-light">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center mb-4">Heart Disease Prediction ❤️</h1>
+        <div class="card p-4 mb-4">
+            <form id="heart-form" method="POST" action="/predict_heart" class="row g-3">
+                <div class="col-md-4"><div class="form-group"><label>Age</label><input type="number" name="age" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Sex (1=M, 0=F)</label><input type="number" name="sex" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Chest Pain Type (cp)</label><input type="number" name="cp" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Resting Blood Pressure</label><input type="number" name="trestbps" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Cholesterol</label><input type="number" name="chol" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Fasting Blood Sugar</label><input type="number" name="fbs" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Resting ECG</label><input type="number" name="restecg" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Max Heart Rate</label><input type="number" name="thalach" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>Exercise Induced Angina</label><input type="number" name="exang" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>oldpeak</label><input type="number" step="0.01" name="oldpeak" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>slope</label><input type="number" name="slope" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>ca</label><input type="number" name="ca" class="form-control" required></div></div>
+                <div class="col-md-4"><div class="form-group"><label>thal</label><input type="number" name="thal" class="form-control" required></div></div>
+                <div class="col-12 text-center mt-4"><button type="submit" class="btn btn-danger">Predict Heart Disease</button></div>
+            </form>
+            </div>
+    </div>
+    
+    <div class="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;">
+        <div class="card" id="chat-card">
+            <div class="card-header bg-primary text-white" style="cursor: pointer;" onclick="toggleChat()">
+                Medical Assistant Chatbot
+            </div>
+            <div class="card-body" id="chat-body" style="height: 300px; overflow-y: scroll; display: none;">
+            </div>
+            <div class="card-footer" id="chat-footer" style="display: none;">
+                <input type="text" id="chat-input" class="form-control" placeholder="Ask about your results..." onkeypress="if(event.keyCode == 13) sendMessage()">
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // NOTE: All AJAX listener code has been REMOVED from this section.
+        // The page now relies solely on the Flask redirect.
+
+        let currentPrediction = "No prediction yet.";
+        
+        // --- CHATBOT FUNCTIONS ---
+        function toggleChat() {
+            const body = document.getElementById('chat-body');
+            const footer = document.getElementById('chat-footer');
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                footer.style.display = 'block';
+                body.scrollTop = body.scrollHeight; 
+                document.getElementById('chat-input').focus(); 
+            } else {
+                body.style.display = 'none';
+                footer.style.display = 'none';
+            }
+        }
+
+        function appendMessage(sender, message) {
+            const chatBody = document.getElementById('chat-body');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'bot' ? 'bot-message' : 'user-message';
+            msgDiv.innerHTML = sender === 'bot' ? `**Bot:** ${message}` : `You: ${message}`;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function sendMessage() {
+            const inputField = document.getElementById('chat-input');
+            const message = inputField.value.trim();
+
+            if (message === "") return;
+
+            appendMessage('user', message);
+            inputField.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    prediction: currentPrediction 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage('bot', data.response);
+            })
+            .catch(error => {
+                console.error('Chat error:', error);
+                appendMessage('bot', 'I apologize, but I encountered an error while processing your request.');
+            });
+        }
+
+        window.onload = function() {
+            appendMessage('bot', "Hello! I'm your Medical Assistant bot, powered by Gemini. How can I help you?");
+        };
+        
+    </script>
+</body>
+</html>

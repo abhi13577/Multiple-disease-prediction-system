@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Disease Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- <style>
+        body { background-color: #121212; color: #e0e0e0; }
+        .container { margin-top: 50px; }
+        .card { background-color: #1e1e1e; border: 1px solid #333; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .btn-page { width: 100%; margin: 10px 0; }
+    </style> -->
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">Prediction System 🩺</a>
+            <div class="d-flex">
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container text-center">
+        <h1 class="mb-4">Multiple Disease Prediction System</h1>
+        <p class="lead">Select a disease to get started.</p>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <a href="/diabetes" class="btn btn-primary btn-lg btn-page">Predict Diabetes 🍬</a>
+            </div>
+            <div class="col-md-4">
+                <a href="/heart" class="btn btn-danger btn-lg btn-page">Predict Heart Disease ❤️</a>
+            </div>
+            <div class="col-md-4">
+                <a href="/parkinsons" class="btn btn-warning btn-lg btn-page">Predict Parkinson's 🧠</a>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <a href="/report_analysis" class="btn btn-info btn-lg btn-page">View History & Analysis 📊</a>
+    </div>
+</div>
+         <!-- <div class="container text-center">
+        <h1 class="mb-4">Hi **User**, welcome to our prediction system</h1> 
+        
+        <p class="lead">Select a disease to get started.</p>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <a href="/diabetes" class="btn btn-primary btn-lg btn-page">Predict Diabetes 🍬</a>
+            </div>
+            <div class="col-md-4">
+                <a href="/heart" class="btn btn-danger btn-lg btn-page">Predict Heart Disease ❤️</a>
+            </div>
+            <div class="col-md-4">
+                <a href="/parkinsons" class="btn btn-warning btn-lg btn-page">Predict Parkinson's 🧠</a>
+            </div>
+        </div>
+    </div> -->
+    <!-- <div class="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;">
+    <div class="card" id="chat-card">
+        <div class="card-header bg-primary text-white" style="cursor: pointer;" onclick="toggleChat()">
+            Medical Assistant Chatbot
+        </div>
+        <div class="card-body" id="chat-body" style="height: 300px; overflow-y: scroll; display: none;">
+            </div>
+        <div class="card-footer" id="chat-footer" style="display: none;">
+            <input type="text" id="chat-input" class="form-control" placeholder="Ask about your results..." onkeypress="if(event.keyCode == 13) sendMessage()">
+        </div>
+    </div>
+</div>
+    </div> -->
+    <script src="{{ url_for('static', filename='Script.js') }}"></script>
+</body>
+</html>
